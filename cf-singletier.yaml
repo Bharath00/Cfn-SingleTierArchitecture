@@ -131,3 +131,31 @@ Resources:
           IpProtocol: tcp
           CidrIp: 0.0.0.0/0
       VpcId: !Ref PublicVpc
+
+# Create Target Group
+
+  ALBTargetGroup1:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      IpAddressType: ipv4
+      Name: ALBTargetGroup1
+      Protocol: HTTP
+      ProtocolVersion: HTTP1
+      TargetType: instance
+      Port: 80
+      VpcId: !Ref PublicVpc
+      Targets:
+        - Id: !Ref PublicInstance
+          Port: 80
+
+# Create Listener for ALB
+
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref PublicLoadBalancer
+      Protocol: "HTTP"
+      Port: 80
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ALBTargetGroup1
